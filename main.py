@@ -25,7 +25,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(widget)
 
         self.listColor = []
-        colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
+        self.colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
                   'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
                   'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
                   'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',
@@ -44,8 +44,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             for idx in range(self.sizeMatrix):
                 newId = idy * self.sizeMatrix + idx
                 newObj = sampleNumber(newId)
+                newObj.updateStyleSheet(self.colors[newId % 30])
                 self.gridLayout.addWidget(newObj, idy, idx)
-
 
 class sampleNumber(QFrame):
     """docstring for sampleNumber"""
@@ -57,11 +57,6 @@ class sampleNumber(QFrame):
 
     def sample(self):
         self.setObjectName(u"frame" + str(self.id))
-        self.setStyleSheet(u"border-width: 1;\n"
-                                 "border-radius: 3;\n"
-                                 "border-style: dashed;\n"
-                                 "border-color: rgb(10, 10, 10);\n"
-                                 "background-color: aquamarine")
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Raised)
 
@@ -78,6 +73,13 @@ class sampleNumber(QFrame):
         self.pushButton.setText(str(self.id))
 
         self.box.addWidget(self.pushButton, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
+    def updateStyleSheet(self, color):
+        self.setStyleSheet(u"border-width: 1;\n"
+                                 "border-radius: 3;\n"
+                                 "border-style: dashed;\n"
+                                 "border-color: rgb(10, 10, 10);\n"                                 
+                                 "background-color: {}".format(color))
 
     def setText(self, text):
         self.pushButton.setText(text)
