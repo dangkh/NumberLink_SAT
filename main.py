@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import *
+from ultis import *
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -19,70 +20,97 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         uic.loadUi('numberLink.ui', self)
 
         self.setObjectName("NumberLink")
-        self.resize(int(1500), int(850))
+        self.resize(int(700), int(350))
         widget = QtWidgets.QWidget()
         widget.setLayout(self.horizontalLayout)
         self.setCentralWidget(widget)
 
         self.listColor = []
         self.colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
-                  'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
-                  'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
-                  'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',
-                  'teal', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'yellow', 'yellowgreen']
+                       'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
+                       'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
+                       'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',
+                       'teal', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'yellow', 'yellowgreen']
         self.createEvent()
 
     def createEvent(self):
         self.createMatrixBtn.clicked.connect(self.genMatrix)
-        self.numSizeMatrix.setMinimum(2)
-        self.numSizeMatrix.setMaximum(10)
+        self.numSizeMatrix.setMinimum(3)
+        self.numSizeMatrix.setMaximum(20)
+        self.mEditBtn.clicked.connect(self.editMatrix)
+        self.auEditBtn.clicked.connect(self.autoEditMatrix)
+        self.numberPropGroup.hide()
+        self.editFrame.hide()
+        self.colorSpinBox.setParent(None)
+        self.colorSpinBox = textSpinBox()
+        self.gridLayout_2.addWidget(self.colorSpinBox, 1, 1, 1, 1)
+        self.updateBtn.clicked.connect(self.updateBtnFunc)
+        self.editStt = False
+        self.currentBtn = None
+        self.assignedColor = [-1]*100
+        self.assignedNum = [0]*100
 
     def genMatrix(self):
+        self.editFrame.show()
         self.sizeMatrix = self.numSizeMatrix.value()
         self.listObject = []
         for idy in range(self.sizeMatrix):
             for idx in range(self.sizeMatrix):
                 newId = idy * self.sizeMatrix + idx
                 newObj = sampleNumber(newId)
-                newObj.updateStyleSheet(self.colors[newId % 30])
+                newObj.setPos(idy, idx)
+                newObj.pushButton.clicked.connect(lambda param1, arg1=newObj : self.updateInfo2Btn(param1, arg1))
+                newObj.mouseReleaseEvent = lambda param1, arg1=newObj : self.updateInfo2Btn(param1, arg1)
+                # newObj.updateStyleSheet(self.colors[newId % 30])
+
                 self.gridLayout.addWidget(newObj, idy, idx)
+        self.genMatrixFrame.hide()
 
-class sampleNumber(QFrame):
-    """docstring for sampleNumber"""
+    def editMatrix(self):
+        self.editStt = True
+        self.mEditBtn.setEnabled(False)
+        self.auEditBtn.hide()
 
-    def __init__(self, arg=None):
-        super(sampleNumber, self).__init__()
-        self.id = arg
-        self.sample()
+    def autoEditMatrix(self):
+        pass
 
-    def sample(self):
-        self.setObjectName(u"frame" + str(self.id))
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setFrameShadow(QFrame.Raised)
+    def updateInfo2Btn(self, event, objectI):
+        if not self.editStt:
+            return
+        self.numberPropGroup.show()
+        idy, idx = objectI.getPos()
+        self.label.setText("Number Properties at: {} {}".format(idy, idx))
+        self.currentBtn = objectI
 
-        self.box = QVBoxLayout(self)
-        self.box.setObjectName(u"box")
-        self.pushButton = QPushButton()
-        self.pushButton.setObjectName(u"pushButton")
-        font = QtGui.QFont()
-        font.setPointSize(30)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet(u"background-color: rgba(255, 255, 255, 0);border: none;color: white;")
-        self.pushButton.setText(str(self.id))
+    def updateBtnFunc(self):
+        if self.currentBtn is None:
+            return
+        cl = self.colorSpinBox.value()
+        num = self.numberSpinBox.value()
+        if self.assignedNum[num] >= 2: 
+            return
+        if self.assignedColor[num] == -1 or self.assignedColor[num] == cl:
+            self.assignedNum[num] += 1
+            self.assignedColor[num] = cl
+            self.currentBtn.updateStyleSheet(self.colors[cl])
+            self.currentBtn.setText(str(num))
+            self.numberPropGroup.hide()
+        else:
+            pass
 
-        self.box.addWidget(self.pushButton, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-
-    def updateStyleSheet(self, color):
-        self.setStyleSheet(u"border-width: 1;\n"
-                                 "border-radius: 3;\n"
-                                 "border-style: dashed;\n"
-                                 "border-color: rgb(10, 10, 10);\n"                                 
-                                 "background-color: {}".format(color))
-
-    def setText(self, text):
-        self.pushButton.setText(text)
+    def changeEventVisual(self, btn):
+        def wrap():
+            self.changeObjectScreen(btn)
+            if self.currentEvent is None:
+                btn.setEnabled(True)
+                self.setMarker(btn)
+            elif self.currentEvent == btn:
+                self.closeMarker(btn)
+            elif btn.text() == "Resting":
+                self.closeMarker(self.currentEvent)
+                self.setMarker(btn)
+            else:
+                print("error")
 
 
 if __name__ == "__main__":
