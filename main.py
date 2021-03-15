@@ -26,11 +26,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(widget)
 
         self.listColor = []
-        self.colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
-                       'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
-                       'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
-                       'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',
-                       'teal', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'yellow', 'yellowgreen']
+        self.colors = arg.colors
         self.createEvent()
 
     def createEvent(self):
@@ -47,8 +43,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.updateBtn.clicked.connect(self.updateBtnFunc)
         self.editStt = False
         self.currentBtn = None
-        self.assignedColor = [-1]*100
-        self.assignedNum = [0]*100
+        self.assignedColor = [-1] * 10
+        self.assignedNum = [0] * 10
+        self.updateGroup.hide()
+        self.finishGroup.hide()
+        self.finishEditBtn.clicked.connect(self.finishEditFunc)
+        self.SatBtn.clicked.connect(self.satFunc)
+        self.resetBtn.clicked.connect(self.resetBtnFunc)
 
     def genMatrix(self):
         self.editFrame.show()
@@ -59,14 +60,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 newId = idy * self.sizeMatrix + idx
                 newObj = sampleNumber(newId)
                 newObj.setPos(idy, idx)
-                newObj.pushButton.clicked.connect(lambda param1, arg1=newObj : self.updateInfo2Btn(param1, arg1))
-                newObj.mouseReleaseEvent = lambda param1, arg1=newObj : self.updateInfo2Btn(param1, arg1)
+                newObj.pushButton.clicked.connect(lambda param1, arg1=newObj: self.updateInfo2Btn(param1, arg1))
+                newObj.mouseReleaseEvent = lambda param1, arg1=newObj: self.updateInfo2Btn(param1, arg1)
                 # newObj.updateStyleSheet(self.colors[newId % 30])
 
                 self.gridLayout.addWidget(newObj, idy, idx)
         self.genMatrixFrame.hide()
 
     def editMatrix(self):
+        self.testSatGroup.hide()
+        self.finishGroup.show()
         self.editStt = True
         self.mEditBtn.setEnabled(False)
         self.auEditBtn.hide()
@@ -78,6 +81,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         if not self.editStt:
             return
         self.numberPropGroup.show()
+        self.updateGroup.show()
         idy, idx = objectI.getPos()
         self.label.setText("Number Properties at: {} {}".format(idy, idx))
         self.currentBtn = objectI
@@ -87,16 +91,34 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             return
         cl = self.colorSpinBox.value()
         num = self.numberSpinBox.value()
-        if self.assignedNum[num] >= 2: 
+        if self.assignedNum[num] >= 2:
             return
         if self.assignedColor[num] == -1 or self.assignedColor[num] == cl:
             self.assignedNum[num] += 1
             self.assignedColor[num] = cl
             self.currentBtn.updateStyleSheet(self.colors[cl])
             self.currentBtn.setText(str(num))
+            self.currentBtn.cl = cl
+            self.currentBtn.num = num
             self.numberPropGroup.hide()
+            self.updateGroup.hide()
         else:
             pass
+
+    def resetBtnFunc(self):
+        cl = self.currentBtn.cl
+        num = self.currentBtn.num
+        if cl == -1 or num == -1:
+            return
+        self.currentBtn.cl = -1
+        self.currentBtn.num = -1
+        self.currentBtn.resetStyleSheet()
+        self.currentBtn.setText("")
+        self.numberPropGroup.hide()
+        self.updateGroup.hide()
+        self.assignedNum[num] = max(self.assignedNum[num] - 1, 0)
+        if self.assignedNum[num] == 0:
+            self.assignedColor[num] = -1
 
     def changeEventVisual(self, btn):
         def wrap():
@@ -111,6 +133,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 self.setMarker(btn)
             else:
                 print("error")
+
+    def finishEditFunc(self):
+        self.finishGroup.hide()
+        self.testSatGroup.show()
+        self.numberPropGroup.hide()
+        self.updateGroup.hide()
+        self.editStt = False
+        self.mEditBtn.setEnabled(True)
+        self.auEditBtn.show()
+
+    def satFunc(self):
+        pass
 
 
 if __name__ == "__main__":
