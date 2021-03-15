@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import *
 from ultis import *
-
+import numpy as np
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -63,7 +63,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 newObj.pushButton.clicked.connect(lambda param1, arg1=newObj: self.updateInfo2Btn(param1, arg1))
                 newObj.mouseReleaseEvent = lambda param1, arg1=newObj: self.updateInfo2Btn(param1, arg1)
                 # newObj.updateStyleSheet(self.colors[newId % 30])
-
+                self.listObject.append(newObj)
                 self.gridLayout.addWidget(newObj, idy, idx)
         self.genMatrixFrame.hide()
 
@@ -144,7 +144,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.auEditBtn.show()
 
     def satFunc(self):
-        pass
+        matrix = np.zeros([self.sizeMatrix, self.sizeMatrix])
+
+        for obj in self.listObject:
+            yy, xx = obj.getPos()
+            print(obj.num, yy, xx)
+            matrix[yy][xx] = obj.num
+        print(matrix)
 
 
 if __name__ == "__main__":
