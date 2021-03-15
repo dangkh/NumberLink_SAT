@@ -1,19 +1,18 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import *
+import argparse
+
 
 class textSpinBox(QSpinBox):
     def __init__(self, parent=None):
         super(textSpinBox, self).__init__(parent)
-        self.colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
-                       'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
-                       'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
-                       'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',
-                       'teal', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'yellow', 'yellowgreen']
+        self.colors = arg.colors
         self.setRange(0, len(self.colors) - 1)
 
     def textFromValue(self, value):
         self.setStyleSheet("color: {}".format(self.colors[self.value()]))
         return self.colors[value]
+
 
 class sampleNumber(QFrame):
     """docstring for sampleNumber"""
@@ -22,15 +21,8 @@ class sampleNumber(QFrame):
         super(sampleNumber, self).__init__()
         self.id = arg
         self.sample()
-        self.number = -1
-        # self.changeEvent(QtCore.QEvent.MouseButtonPress)
-        # self.MouseButtonPress(self.testEnter)
-        # self.mouseReleaseEvent = self.testEnter
-        self.counter = 0
-
-    def testEnter(self, event):
-        print("ok ", self.counter)
-        self.counter += 1
+        self.cl = -1
+        self.num = -1
 
     def sample(self):
         self.setObjectName(u"frame" + str(self.id))
@@ -50,6 +42,7 @@ class sampleNumber(QFrame):
         # self.pushButton.setText(str(self.id))
 
         self.box.addWidget(self.pushButton, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+        self.resetStyleSheet()
 
     def updateStyleSheet(self, color):
         self.setStyleSheet(u"border-width: 1;\n"
@@ -67,3 +60,20 @@ class sampleNumber(QFrame):
 
     def getPos(self):
         return self.idy, self.idx
+
+    def resetStyleSheet(self):
+        self.setStyleSheet(u"border-width: 1;\n"
+                           "border-radius: 3;\n"
+                           "border-style: dashed;\n"
+                           "border-color: rgb(10, 10, 10);\n")
+
+
+class arguments(argparse.Namespace):
+    colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
+              'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
+              'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
+                       'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',
+                       'teal', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'yellow', 'yellowgreen']
+
+
+arg = arguments
