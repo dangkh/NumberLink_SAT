@@ -23,7 +23,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         uic.loadUi('test.ui', self)
         aa = self.frame.size()
         canvas = QtGui.QPixmap(aa.height(), aa.width())
-        self.x, self.y = aa.height(), aa.width()
+        self.y, self.x = aa.height(), aa.width()
         self.resize(self.y, self.x)
         canvas.fill(Qt.transparent)
         self.label.setPixmap(canvas)
