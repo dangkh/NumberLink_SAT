@@ -12,6 +12,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import *
 from ultis import *
 import numpy as np
+from numberLink import *
+import pycosat
+
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -31,7 +34,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def createEvent(self):
         self.createMatrixBtn.clicked.connect(self.genMatrix)
-        self.numSizeMatrix.setMinimum(3)
+        self.numSizeMatrix.setMinimum(2)
         self.numSizeMatrix.setMaximum(20)
         self.mEditBtn.clicked.connect(self.editMatrix)
         self.auEditBtn.clicked.connect(self.autoEditMatrix)
@@ -148,9 +151,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         for obj in self.listObject:
             yy, xx = obj.getPos()
-            print(obj.num, yy, xx)
             matrix[yy][xx] = obj.num
-        print(matrix)
+
+        res = NumberLink(matrix)
+        print("loaded Clauses")
+        result = pycosat.solve(res.getClause())
+        print(len(res.getClause()))
+        print(result)
 
 
 if __name__ == "__main__":
