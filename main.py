@@ -14,6 +14,7 @@ from ultis import *
 import numpy as np
 from numberLink import *
 import pycosat
+from PyQt5.QtGui import QPainter, QBrush
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -78,7 +79,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.auEditBtn.hide()
 
     def autoEditMatrix(self):
-        pass
+        print("entered")
 
     def updateInfo2Btn(self, event, objectI):
         if not self.editStt:
@@ -156,8 +157,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         res = NumberLink(matrix)
         print("loaded Clauses")
         result = pycosat.solve(res.getClause())
-        print(len(res.getClause()))
-        print(result)
+        print("Number of Clauses: ", len(res.getClause()))
+        # print(result)
+        listEdge = res.getListEdge()
+        print(listEdge)
+        for info in listEdge:
+            [y, x, d] = info
+            index = (y - 1) * self.sizeMatrix + (x - 1)
+            obj = self.listObject[index]
+            obj.plotLabel(d)
 
 
 if __name__ == "__main__":

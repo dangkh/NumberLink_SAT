@@ -24,6 +24,32 @@ class Variable(object):
             rePos += self.cellSize
         return rePos
 
+    def getVCell(self, x):
+        counter = 0
+        for dy in range(1, self.sizeM + 1):
+            for dx in range(1, self.sizeN + 1):
+                for dd in range(1, 5):
+                    counter += 1
+                    if counter == x:
+                        return [dy, dx, dd]
+        return -1
+
+    def getVConnection(self, x):
+        counter = 0
+        for dy in range(1, self.sizeM + 1):
+            for dx in range(1, self.sizeN + 1):
+                for ddy in range(1, self.sizeM + 1):
+                    for ddx in range(1, self.sizeN + 1):
+                        counter += 1
+                        if counter == x:
+                            return[dy, dx, ddy, ddx]
+        return -1
+
+    def getSpecificV(self, x):
+        if x <= self.cellSize:
+            return self.getVCell(x)
+        return self.getVConnection(x - self.cellSize)
+
 
 class NumberLinkClause(object):
     """docstring for NumberLinkClause"""
@@ -65,7 +91,7 @@ class NumberLinkClause(object):
         if d == 1:
             return [dy, dx - 1]
         elif d == 2:
-            return [dy -1 , dx]
+            return [dy - 1, dx]
         elif d == 3:
             return [dy, dx + 1]
         return [dy + 1, dx]
@@ -79,10 +105,10 @@ class NumberLinkClause(object):
         if 1 <= newY and newY <= self.sizeM and 1 <= newX and newX <= self.sizeN:
             vAdj = self.v.getV([dy, dx, newY, newX], "connection")
             self.clauses.append([-x, vAdj])
-            self.clauses.append([-vAdj, x])
-            # vAdj = self.v.getV([newY, newX, tmp[d-1]], "cell")
-            # self.clauses.append([-x, vAdj])
             # self.clauses.append([-vAdj, x])
+            vAdj = self.v.getV([newY, newX, tmp[d - 1]], "cell")
+            self.clauses.append([-x, vAdj])
+            self.clauses.append([-vAdj, x])
 
     def addClause_4(self, dy):
         # squares at the edges clause along the y axis
@@ -103,12 +129,12 @@ class NumberLinkClause(object):
         self.clauses.append([-vDy2])
 
     def addClause_6(self, dy, dx, dk, dl, dm, dn):
-        # if (dy, dx) == (dk, dl):
-        #     return
-        # if (dk, dl) == (dm, dn):
-        #     return
-        # if (dy, dx) == (dm, dn):
-        #     return
+        if (dy, dx) == (dk, dl):
+            return
+        if (dk, dl) == (dm, dn):
+            return
+        if (dy, dx) == (dm, dn):
+            return
         vCijkl = self.v.getV([dy, dx, dk, dl], "connection")
         vCklmn = self.v.getV([dk, dl, dm, dn], "connection")
         vCijmn = self.v.getV([dy, dx, dm, dn], "connection")
@@ -192,16 +218,51 @@ class NumberLink(object):
     def getClause(self):
         return self.clauses
 
+    def getVariable(self, x):
+        return self.v.getSpecificV(x)
+
+    def getListEdge(self):
+        print("solving...")
+        result = pycosat.solve(self.clauses)
+        listEdge = []
+        for x in result:
+            if x > 0:
+                abc = self.getVariable(x)
+                if len(abc) <= 3:
+                    listEdge.append(abc)
+        return listEdge
+
 
 if __name__ == '__main__':
     matrix = [[0, 0], [-1, -1]]
     res = NumberLink(np.asarray(matrix))
     print("loaded Clauses")
-    result = pycosat.solve(res.getClause())
-    print(len(res.getClause()))
+    # result = pycosat.solve(res.getClause())
+    # print(len(res.getClause()))
     # print(result)
-    for sol in pycosat.itersolve(res.getClause()):
-        print(sol)
+    # for sol in pycosat.itersolve(res.getClause()):
+    #     print(sol)
+    # a = [ -1 for x in range(1000)]
+    # tmp = [4, 8, 10, 11, 13, 14, 18, 19, 20, 25, 24, 30, 28, 31]
+    # for x in tmp:
+    #     a[x] = 1
+    # print("debug")
+    # for x in res.getClause():
+    #     listT = []
+    #     for xi in x:
+    #         if xi < 0:
+    #             listT.append(-a[-xi])
+    #         else:
+    #             listT.append(a[xi])
+    #     tmpRes = 0
+    #     for xi in listT:
+    #         if xi == 1 : tmpRes = 1
+    #     print(x, "=====================> ", tmpRes)
     # from pysat.solvers import Minisat22
     # with Minisat22(res.getClause()) as m:
     #     print(m.solve())
+    # for x in result:
+    #     if x > 0:
+    #         print(x, res.getVariable(x))
+    abc = res.getListEdge()
+    print(abc)
