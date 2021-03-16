@@ -161,6 +161,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # print(result)
         listEdge = res.getListEdge()
         print(listEdge)
+        if len(listEdge) == 0:
+            return
         for info in listEdge:
             [y, x, d] = info
             index = (y - 1) * self.sizeMatrix + (x - 1)

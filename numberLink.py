@@ -144,6 +144,10 @@ class NumberLinkClause(object):
         vCijkl = self.v.getV([dy, dx, dk, dl], "connection")
         self.clauses.append([vCijkl])
 
+    def addClause_8(self, dy, dx, dk, dl):
+        vCijkl = self.v.getV([dy, dx, dk, dl], "connection")
+        self.clauses.append([-vCijkl])
+
     def getLen(self):
         return len(self.clauses)
 
@@ -208,9 +212,15 @@ class NumberLink(object):
             for dx in range(1, self.sizeN + 1):
                 for dk in range(1, self.sizeM + 1):
                     for dl in range(1, self.sizeN + 1):
-                        if ((dy, dx) != (dk, dl)) and (matrix[dy - 1][dx - 1] == matrix[dk - 1][dl - 1]):
-                            if (matrix[dy - 1][dx - 1] != -1):
+                        posY = dy - 1
+                        posX = dx - 1
+                        posK = dk - 1
+                        posL = dl - 1
+                        if ((dy, dx) != (dk, dl)) and (matrix[posY][posX] == matrix[posK][posL]):
+                            if (matrix[posY][posX] != -1):
                                 numberCls.addClause_7(dy, dx, dk, dl)
+                        # if (matrix[posY][posX] != matrix[posK][posL]) and (matrix[posY][posX] != -1) and (matrix[posK][posL] != -1):
+                        #     numberCls.addClause_8(dy, dx, dk, dl)
         self.clauses = numberCls.getClause()
         for obj in self.clauses:
             print(obj)
@@ -224,6 +234,8 @@ class NumberLink(object):
     def getListEdge(self):
         print("solving...")
         result = pycosat.solve(self.clauses)
+        if result == "UNSAT":
+            return []
         listEdge = []
         for x in result:
             if x > 0:
@@ -234,35 +246,39 @@ class NumberLink(object):
 
 
 if __name__ == '__main__':
-    matrix = [[0, 0], [-1, -1]]
+    matrix = [[0, -1], [-1, 0]]
     res = NumberLink(np.asarray(matrix))
     print("loaded Clauses")
-    # result = pycosat.solve(res.getClause())
-    # print(len(res.getClause()))
-    # print(result)
+    result = pycosat.solve(res.getClause())
+    print(len(res.getClause()))
+    print(result)
     # for sol in pycosat.itersolve(res.getClause()):
     #     print(sol)
-    # a = [ -1 for x in range(1000)]
-    # tmp = [4, 8, 10, 11, 13, 14, 18, 19, 20, 25, 24, 30, 28, 31]
-    # for x in tmp:
-    #     a[x] = 1
-    # print("debug")
-    # for x in res.getClause():
-    #     listT = []
-    #     for xi in x:
-    #         if xi < 0:
-    #             listT.append(-a[-xi])
-    #         else:
-    #             listT.append(a[xi])
-    #     tmpRes = 0
-    #     for xi in listT:
-    #         if xi == 1 : tmpRes = 1
-    #     print(x, "=====================> ", tmpRes)
+    a = [-1 for x in range(1000)]
+    tmp = [4, 8, 10, 11, 13, 14, 18, 19, 20, 25, 24, 30, 28, 31]
+    for x in tmp:
+        a[x] = 1
+    # for x in result:
+    #     if x > 0:
+    #         a[x] = 1
+    print("debug")
+    for x in res.getClause():
+        listT = []
+        for xi in x:
+            if xi < 0:
+                listT.append(-a[-xi])
+            else:
+                listT.append(a[xi])
+        tmpRes = 0
+        for xi in listT:
+            if xi == 1:
+                tmpRes = 1
+        print(x, "=====================> ", tmpRes)
     # from pysat.solvers import Minisat22
     # with Minisat22(res.getClause()) as m:
     #     print(m.solve())
-    # for x in result:
-    #     if x > 0:
-    #         print(x, res.getVariable(x))
-    abc = res.getListEdge()
-    print(abc)
+    for x in result:
+        if x > 0:
+            print(x, res.getVariable(x))
+    # abc = res.getListEdge()
+    # print(abc)
