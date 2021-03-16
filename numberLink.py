@@ -219,8 +219,8 @@ class NumberLink(object):
                         if ((dy, dx) != (dk, dl)) and (matrix[posY][posX] == matrix[posK][posL]):
                             if (matrix[posY][posX] != -1):
                                 numberCls.addClause_7(dy, dx, dk, dl)
-                        # if (matrix[posY][posX] != matrix[posK][posL]) and (matrix[posY][posX] != -1) and (matrix[posK][posL] != -1):
-                        #     numberCls.addClause_8(dy, dx, dk, dl)
+                        if (matrix[posY][posX] != matrix[posK][posL]) and (matrix[posY][posX] != -1) and (matrix[posK][posL] != -1):
+                            numberCls.addClause_8(dy, dx, dk, dl)
         self.clauses = numberCls.getClause()
         for obj in self.clauses:
             print(obj)
@@ -247,38 +247,39 @@ class NumberLink(object):
 
 if __name__ == '__main__':
     matrix = [[0, -1], [-1, 0]]
-    res = NumberLink(np.asarray(matrix))
-    print("loaded Clauses")
-    result = pycosat.solve(res.getClause())
-    print(len(res.getClause()))
-    print(result)
-    # for sol in pycosat.itersolve(res.getClause()):
-    #     print(sol)
-    a = [-1 for x in range(1000)]
-    tmp = [4, 8, 10, 11, 13, 14, 18, 19, 20, 25, 24, 30, 28, 31]
-    for x in tmp:
-        a[x] = 1
+    # res = NumberLink(np.asarray(matrix))
+    # print("loaded Clauses")
+    # result = pycosat.solve(res.getClause())
+    # print(len(res.getClause()))
+    # print(result)
+    # # for sol in pycosat.itersolve(res.getClause()):
+    # #     print(sol)
+    # a = [-1 for x in range(1000)]
+    # tmp = [4, 8, 10, 11, 13, 14, 18, 19, 20, 25, 24, 30, 28, 31]
+    # for x in tmp:
+    #     a[x] = 1
+    # # for x in result:
+    # #     if x > 0:
+    # #         a[x] = 1
+    # print("debug")
+    # for x in res.getClause():
+    #     listT = []
+    #     for xi in x:
+    #         if xi < 0:
+    #             listT.append(-a[-xi])
+    #         else:
+    #             listT.append(a[xi])
+    #     tmpRes = 0
+    #     for xi in listT:
+    #         if xi == 1:
+    #             tmpRes = 1
+    #     print(x, "=====================> ", tmpRes)
+    # # from pysat.solvers import Minisat22
+    # # with Minisat22(res.getClause()) as m:
+    # #     print(m.solve())
     # for x in result:
     #     if x > 0:
-    #         a[x] = 1
-    print("debug")
-    for x in res.getClause():
-        listT = []
-        for xi in x:
-            if xi < 0:
-                listT.append(-a[-xi])
-            else:
-                listT.append(a[xi])
-        tmpRes = 0
-        for xi in listT:
-            if xi == 1:
-                tmpRes = 1
-        print(x, "=====================> ", tmpRes)
-    # from pysat.solvers import Minisat22
-    # with Minisat22(res.getClause()) as m:
-    #     print(m.solve())
-    for x in result:
-        if x > 0:
-            print(x, res.getVariable(x))
-    # abc = res.getListEdge()
-    # print(abc)
+    #         print(x, res.getVariable(x))
+    # # abc = res.getListEdge()
+    # # print(abc)
+    

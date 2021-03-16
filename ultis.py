@@ -105,7 +105,7 @@ class sampleNumber(QFrame):
 
 
 class arguments(argparse.Namespace):
-    colors = ['aqua', 'aquamarine', 'black', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
+    colors = ['aqua', 'aquamarine', 'blue', 'brown', 'chartreuse', 'chocolate', 'coral',
               'crimson', 'cyan', 'darkblue', 'darkgreen', 'fuchsia', 'gold', 'goldenrod', 'green', 'grey', 'indigo',
               'ivory', 'khaki', 'lavender', 'lightblue', 'lightgreen', 'lime', 'magenta', 'maroon', 'navy', 'olive',
                        'orange', 'orangered', 'orchid', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'tan',

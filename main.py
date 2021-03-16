@@ -54,6 +54,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.finishEditBtn.clicked.connect(self.finishEditFunc)
         self.SatBtn.clicked.connect(self.satFunc)
         self.resetBtn.clicked.connect(self.resetBtnFunc)
+        self.restartBtn.clicked.connect(self.restartBtnFunc)
 
     def genMatrix(self):
         self.editFrame.show()
@@ -148,6 +149,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.auEditBtn.show()
 
     def satFunc(self):
+        self.numberPropGroup.hide()
+        self.updateGroup.hide()
+        self.finishGroup.hide()
+        self.editFrame.hide()
+        self.genMatrixFrame.hide()
+        self.SatBtn.hide()
         matrix = np.zeros([self.sizeMatrix, self.sizeMatrix])
 
         for obj in self.listObject:
@@ -168,6 +175,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             index = (y - 1) * self.sizeMatrix + (x - 1)
             obj = self.listObject[index]
             obj.plotLabel(d)
+
+    def restartBtnFunc(self):
+        self.numberPropGroup.hide()
+        self.updateGroup.hide()
+        self.finishGroup.hide()
+        self.editFrame.hide()
+        self.editStt = False
+        self.currentBtn = None
+        self.assignedColor = [-1] * 10
+        self.assignedNum = [0] * 10
+        for x in self.listObject:
+            x.setParent(None)
+        self.genMatrixFrame.show()
+        self.SatBtn.show()
 
 
 if __name__ == "__main__":
