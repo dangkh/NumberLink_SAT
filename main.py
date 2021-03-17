@@ -14,6 +14,7 @@ from ultis import *
 import numpy as np
 from numberLink import *
 import pycosat
+import json
 from PyQt5.QtGui import QPainter, QBrush
 
 
@@ -38,7 +39,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.numSizeMatrix.setMinimum(2)
         self.numSizeMatrix.setMaximum(20)
         self.mEditBtn.clicked.connect(self.editMatrix)
-        self.auEditBtn.clicked.connect(self.autoEditMatrix)
         self.numberPropGroup.hide()
         self.editFrame.hide()
         self.colorSpinBox.setParent(None)
@@ -55,6 +55,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.SatBtn.clicked.connect(self.satFunc)
         self.resetBtn.clicked.connect(self.resetBtnFunc)
         self.restartBtn.clicked.connect(self.restartBtnFunc)
+        self.actionQuit.setShortcut("Ctrl+Q")
+        self.actionQuit.triggered.connect(self.closeEvent)
+        self.actionNew_Game.setShortcut("Ctrl+N")
+        self.actionNew_Game.triggered.connect(self.resetBtnFunc)
+        self.actionImport_File.setShortcut("Ctrl+O")
+        self.actionImport_File.triggered.connect(self.openFilePath)
 
     def genMatrix(self):
         self.editFrame.show()
@@ -77,9 +83,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.finishGroup.show()
         self.editStt = True
         self.mEditBtn.setEnabled(False)
-        self.auEditBtn.hide()
 
-    def autoEditMatrix(self):
+    def importFiles(self):
         print("entered")
 
     def updateInfo2Btn(self, event, objectI):
@@ -146,7 +151,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.updateGroup.hide()
         self.editStt = False
         self.mEditBtn.setEnabled(True)
-        self.auEditBtn.show()
 
     def satFunc(self):
         self.numberPropGroup.hide()
@@ -189,6 +193,49 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             x.setParent(None)
         self.genMatrixFrame.show()
         self.SatBtn.show()
+
+    def closeEvent(self, event):
+        print("Quit")
+        QApplication.quit()
+
+    def openFilePath(self):
+        dlg = QFileDialog()
+        # dlg.setFileMode(QFileDi)
+        filenames = [None]
+        if dlg.exec_():
+            filenames = dlg.selectedFiles()
+        path = filenames[0]
+        if path == "" or path is None:
+            return
+        with open(path) as json_file:
+            data = json.load(json_file)
+        print(data["matrix"])
+        self.genMatrix_File(np.asarray(data["matrix"]))
+
+    def genMatrix_File(self, matrix):
+        self.sizeMatrix = matrix.shape[0]
+        print(self.sizeMatrix)
+        self.listObject = []
+        for idy in range(self.sizeMatrix):
+            for idx in range(self.sizeMatrix):
+                newId = idy * self.sizeMatrix + idx
+                newObj = sampleNumber(newId)
+                newObj.setPos(idy, idx)
+                newObj.pushButton.clicked.connect(lambda param1, arg1=newObj: self.updateInfo2Btn(param1, arg1))
+                newObj.mouseReleaseEvent = lambda param1, arg1=newObj: self.updateInfo2Btn(param1, arg1)
+                # newObj.updateStyleSheet(self.colors[newId % 30])
+                self.listObject.append(newObj)
+                self.gridLayout.addWidget(newObj, idy, idx)
+                if matrix[idy][idx] != -1:
+                    num = matrix[idy][idx]
+                    cl = num
+                    self.assignedNum[num] += 1
+                    self.assignedColor[num] = cl
+                    newObj.updateStyleSheet(self.colors[cl])
+                    newObj.setText(str(num))
+                    newObj.cl = cl
+                    newObj.num = num
+        self.genMatrixFrame.hide()
 
 
 if __name__ == "__main__":

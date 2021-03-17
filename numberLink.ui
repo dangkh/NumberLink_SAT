@@ -89,13 +89,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="auEditBtn">
-             <property name="text">
-              <string>Import File</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -270,7 +263,7 @@
      <x>0</x>
      <y>0</y>
      <width>998</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuReset">

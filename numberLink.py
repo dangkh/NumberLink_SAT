@@ -165,19 +165,19 @@ class NumberLink(object):
         self.sizeN = arg.shape[1]
         self.v = Variable([self.sizeM, self.sizeN])
         matrix = arg
-        for dy in range(1, self.sizeM + 1):
-            for dx in range(1, self.sizeN + 1):
-                for dd in range(1, 5):
-                    pos = self.v.getV([dy, dx, dd], "cell")
-                    print(pos, dy, dx, dd)
-        print("break")
-        for dy in range(1, self.sizeM + 1):
-            for dx in range(1, self.sizeN + 1):
-                for ddy in range(1, self.sizeM + 1):
-                    for ddx in range(1, self.sizeN + 1):
-                        pos = self.v.getV([dy, dx, ddy, ddx], "connection")
-                        print(pos, dy, dx, ddy, ddx)
-        print("break")
+        # for dy in range(1, self.sizeM + 1):
+        #     for dx in range(1, self.sizeN + 1):
+        #         for dd in range(1, 5):
+        #             pos = self.v.getV([dy, dx, dd], "cell")
+        #             print(pos, dy, dx, dd)
+        # print("break")
+        # for dy in range(1, self.sizeM + 1):
+        #     for dx in range(1, self.sizeN + 1):
+        #         for ddy in range(1, self.sizeM + 1):
+        #             for ddx in range(1, self.sizeN + 1):
+        #                 pos = self.v.getV([dy, dx, ddy, ddx], "connection")
+        #                 print(pos, dy, dx, ddy, ddx)
+        # print("break")
         numberCls = NumberLinkClause([self.sizeM, self.sizeN])
         for dy in range(1, self.sizeM + 1):
             for dx in range(1, self.sizeN + 1):
@@ -222,8 +222,8 @@ class NumberLink(object):
                         if (matrix[posY][posX] != matrix[posK][posL]) and (matrix[posY][posX] != -1) and (matrix[posK][posL] != -1):
                             numberCls.addClause_8(dy, dx, dk, dl)
         self.clauses = numberCls.getClause()
-        for obj in self.clauses:
-            print(obj)
+        # for obj in self.clauses:
+        #     print(obj)
 
     def getClause(self):
         return self.clauses
@@ -235,6 +235,7 @@ class NumberLink(object):
         print("solving...")
         result = pycosat.solve(self.clauses)
         if result == "UNSAT":
+            print(result)
             return []
         listEdge = []
         for x in result:
