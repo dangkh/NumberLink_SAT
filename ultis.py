@@ -74,11 +74,11 @@ class sampleNumber(QFrame):
         y, x = self.size().height(), self.size().width()
         canvas = QtGui.QPixmap(y, x)
         canvas.fill(Qt.transparent)
-        self.label = QtWidgets.QLabel()
+        self.label = QtWidgets.QLabel(self)
         self.label.setStyleSheet("border: 0px;")
         self.label.setPixmap(canvas)
         self.pushButton.setParent(None)
-        self.box.addWidget(self.label)
+        self.box.addWidget(self.label, 0, QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
     def displayPos(self, d):
         y, x = self.size().height(), self.size().width()
@@ -100,7 +100,7 @@ class sampleNumber(QFrame):
         painter.setPen(QtGui.QColor("white"))
         painter.setFont(self.font)
         if self.num != -1:
-            painter.drawText(self.rect(), Qt.AlignCenter, str(self.num))
+            painter.drawText(QtCore.QPoint(x1, y1), str(self.num))
         painter.end()
 
 
