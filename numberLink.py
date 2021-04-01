@@ -243,7 +243,11 @@ class NumberLink(object):
                 abc = self.getVariable(x)
                 if len(abc) <= 3:
                     listEdge.append(abc)
+        from pysat.solvers import Minisat22
+        with Minisat22(self.clauses) as m:
+            print(m.solve())
         return listEdge
+        
 
 
 if __name__ == '__main__':
@@ -283,4 +287,31 @@ if __name__ == '__main__':
     #         print(x, res.getVariable(x))
     # # abc = res.getListEdge()
     # # print(abc)
-    
+
+    # Test folder
+    import os
+    import json
+    link = "./testFold/"
+    files = []
+    if os.path.isdir(link):
+        files = [link + d for d in os.listdir(link)]
+        files.sort(key=os.path.abspath)
+    print(files)
+    list_UNSAT = []
+    for file in files:
+        try:
+            with open(file) as json_file:
+                data = json.load(json_file)
+                pass
+                matrix = data["matrix"]
+                res = NumberLink(np.asarray(matrix))
+                print("loaded Clauses")
+                result = pycosat.solve(res.getClause())
+                if result == "UNSAT":
+                    print(result, " ", file)
+                    list_UNSAT.append(file)
+                else:
+                    print("Success ", file)    
+        except Exception as e:
+            print(file, " ", e)
+    print(list_UNSAT)

@@ -47,8 +47,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.updateBtn.clicked.connect(self.updateBtnFunc)
         self.editStt = False
         self.currentBtn = None
-        self.assignedColor = [-1] * 10
-        self.assignedNum = [0] * 10
+        self.assignedColor = [-1] * 100
+        self.assignedNum = [0] * 100
         self.updateGroup.hide()
         self.finishGroup.hide()
         self.finishEditBtn.clicked.connect(self.finishEditFunc)
@@ -179,6 +179,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             index = (y - 1) * self.sizeMatrix + (x - 1)
             obj = self.listObject[index]
             obj.plotLabel(d)
+        self.showNormal()
+        self.resize(int(700), int(350))
+        self.showFullScreen()
 
     def restartBtnFunc(self):
         self.numberPropGroup.hide()
@@ -187,12 +190,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.editFrame.hide()
         self.editStt = False
         self.currentBtn = None
-        self.assignedColor = [-1] * 10
-        self.assignedNum = [0] * 10
+        self.assignedColor = [-1] * 100
+        self.assignedNum = [0] * 100
         for x in self.listObject:
             x.setParent(None)
         self.genMatrixFrame.show()
         self.SatBtn.show()
+        self.showNormal()
+        self.resize(int(700), int(350))
 
     def closeEvent(self, event):
         print("Quit")
@@ -236,6 +241,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     newObj.cl = cl
                     newObj.num = num
         self.genMatrixFrame.hide()
+        self.showFullScreen()
 
 
 if __name__ == "__main__":
