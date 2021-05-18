@@ -1,6 +1,6 @@
 import pycosat
 import numpy as np
-
+from datetime import datetime
 
 class Variable(object):
     """docstring for Variable"""
@@ -243,9 +243,9 @@ class NumberLink(object):
                 abc = self.getVariable(x)
                 if len(abc) <= 3:
                     listEdge.append(abc)
-        from pysat.solvers import Minisat22
-        with Minisat22(self.clauses) as m:
-            print(m.solve())
+        # from pysat.solvers import Minisat22
+        # with Minisat22(self.clauses) as m:
+        #     print(m.solve())
         return listEdge
         
 
@@ -298,15 +298,29 @@ if __name__ == '__main__':
         files.sort(key=os.path.abspath)
     print(files)
     list_UNSAT = []
+    listSize = []
+    list_clause = []
+    list_time = []
     for file in files:
         try:
             with open(file) as json_file:
                 data = json.load(json_file)
-                pass
                 matrix = data["matrix"]
+                timecounter = datetime.now()
+                [sizeM, sizeN] = np.asarray(matrix).shape
+                if sizeM != 12:
+                    continue
+                if sizeM != sizeN:
+                    continue
+                print(sizeM, sizeN)
                 res = NumberLink(np.asarray(matrix))
+                listSize.append([sizeM, sizeN])
+                
                 print("loaded Clauses")
+                print("info: ", len(res.clauses))
+                list_clause.append(len(res.clauses))
                 result = pycosat.solve(res.getClause())
+                list_time.append(datetime.now() - timecounter)
                 if result == "UNSAT":
                     print(result, " ", file)
                     list_UNSAT.append(file)
@@ -315,3 +329,7 @@ if __name__ == '__main__':
         except Exception as e:
             print(file, " ", e)
     print(list_UNSAT)
+    print(listSize)
+    print(list_clause)
+    print(np.mean(np.asarray(list_clause)))
+    print(np.mean(np.asarray(list_time)))
