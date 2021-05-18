@@ -173,6 +173,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         listEdge = res.getListEdge()
         print(listEdge)
         if len(listEdge) == 0:
+            self.showErrorPopup("UNSAT!")
             return
         for info in listEdge:
             [y, x, d] = info
@@ -202,6 +203,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         print("Quit")
         QApplication.quit()
+
+    def showErrorPopup(self, error):
+        msg = QtWidgets.QMessageBox()
+        msg.setText(str(error))
+        msg.exec_()
 
     def openFilePath(self):
         dlg = QFileDialog()
